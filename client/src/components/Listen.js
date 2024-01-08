@@ -6,7 +6,7 @@ import KeyForm from './KeyForm'
 import Key from './Key'
 import io from 'socket.io-client'
 
-const socket = io.connect('http://localhost:3001') // url from backend server
+// const socket = io.connect('http://localhost:3001') // url from backend server
 
 const Listen = ({ user, onListen }) => {
     const [listenOpt, setListen] = useState('')
@@ -96,11 +96,7 @@ const Listen = ({ user, onListen }) => {
 
     const handleClick = (event) => {
         setListen(event.target.getAttribute('data-value'))
-
-        openAuth()
-
-
-        // handleOpen() // show modal
+        handleOpen() // show modal
     }
 
 

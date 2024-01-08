@@ -51,7 +51,7 @@ const io = new Server(server, {
 })
 
 io.on('connection', (socket) => { // when user connects to socket - run this
-    // console.log('User connected: ' + socket.id)
+    console.log('User connected: ' + socket.id)
 
     socket.on('send_message', (data) => { // listen for an event
         console.log(data.room)
@@ -74,42 +74,25 @@ io.on('connection', (socket) => { // when user connects to socket - run this
 app.post('/login', async (req, res) => {
     try {
         let isUnique = false
+        let userId = ''
 
         while (!isUnique) {
-            // generate a new userId
-            let userId = generateRandomString(16)
-        
-            // check if it already exsits in the db
-            const user = await User.findOne({
-                "userId": userId
-            })
-
-            if (!user) { // no existing user with that id
-                isUnique = true 
-
-                const data = {
-                    "userId": userId,
-                    "name": req.body.name,
-                }
-                await User.create(data) // add user to db
-                
-                console.log('Created userId: ' + userId)
-                res.cookie('userId', userId, {
-                    maxAge: 360000,
-                    httpOnly: false, // accessible on by web server
-                    secure: false, // snt over HTTPS only
-                    sameSite: 'Lax',
-                    path: '/'
-                })
-
-                res.status(200).json({ message: 'Success', userId: userId }) // send key to user
-            }
+            userId = generateRandomString(16) // generate a new userId
+            isUnique = await verifyUserId(userId) // verify uniqueness
         }
+        await User.create({ userId: userId, name: req.body.name }) // add user to db
+        const authURL = generateAuthURL()
+        res.status(200).json({ message: 'Success', userId: userId, url: authURL }) // send key to user
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({message: error.message})
     }
 })
+
+async function verifyUserId(userId) {
+    const user = await User.findOne({ userId: userId })
+
+    return user ? false : true // if there exists a user then not unique
+}
 
 app.post('/verify', async (req, res) => {
     let userId = req.body.userId 
@@ -282,10 +265,24 @@ app.post('/key/', async (req, res) => {
     }
 })
 
-// generate new key
-var generate_key = function() {
+
+var generate_key = () => {
     return crypto.randomBytes(16).toString('base64');
 };
+
+
+
+function generateAuthURL () {
+    let authURL = 'https://accounts.spotify.com/authorize?'
+
+    authURL += querystring.stringify({ 
+        response_type: 'code',
+        client_id: CLIENT_ID,
+        redirect_uri: REDIRECT_URI
+    }) 
+
+    return authURL
+}
 
 mongoose.connect(DATABASE_URL)
 .then(() => {

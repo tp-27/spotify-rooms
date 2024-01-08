@@ -10,7 +10,7 @@ import './index.css'
 
 function App() {
     const [user, setUser] = useState('')
-    const [getUser, setGetUser] = useState(true)
+    const [name, setName] = useState('')
     const [listening, setListen] = useState(false) 
     const [room, setRoom] = useState('')
     const [key, setKey] = useState('')
@@ -19,28 +19,31 @@ function App() {
     // Get the user's name and initiate authentification
     const onSubmit = async (e, name) => {
         e.preventDefault()
-        setUser(name)
-
         try {
-            const res = await fetch('http://localhost:3001/listen', {
+            const res = await fetch('http://localhost:3001/login', {
                 method: 'POST',
                 credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    name: name
-                })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ name: name })
             })   
             
             const data = await res.json()
+            console.log(data)
             if (data.message === 'Success') {
                 localStorage.setItem('userId', data.userId)
-                setGetUser(false)
-            } else {
-                alert('Please authenticate to use this application.')
-                setGetUser(true)
+                localStorage.setItem('auth', true)
+                localStorage.setItem('name', name)
+                window.location.href = data.url
+                setAuth(true)
+                setName(name)
             }
+            // if (data.message === 'Success') {
+            //     localStorage.setItem('userId', data.userId)
+            //     setGetUserName(false) // don't need to get user's name
+            // } else {
+            //     alert('Please authenticate to use this application.')
+            //     setGetUserName(true)
+            // }
 
         } catch (error) {
             console.log('Unable to start listening: ' + error)
@@ -52,50 +55,15 @@ function App() {
         setRoom(roomName)
         console.log("Listening in room: " + roomName + sessionKey)
         setListen(true)
-        
     }
 
     useEffect(() => {
-        const verifyAuth = async () => {
-            try {   
-                const res = await fetch('http://localhost:3001/verify', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        userId: localStorage.getItem('userId')
-                    })
-                })
-                const data = await res.json()
+        const auth = localStorage.getItem('auth')
+        const name = localStorage.getItem('name')
 
-                console.log(data)
-                if (data.verifiable) {
-                    setAuth(true)
-                }
-            } catch (error) {
-                console.log(error)
-            }
-        }
-
-        if (!getUser) {
-            verifyAuth() // if we have already set the user's cookie 
-        }
-        
-    }, [getUser])
-
-    // const openAuth = async () => {
-    //     try {
-    //         console.log('login');
-    //         const response = await fetch('http://localhost:3001/login')
-    //         const data = await response.json()
-    //         console.log(data)
-
-    //         // window.location.href = data
-    //     } catch (error) {
-    //         console.log('Unable to authenticate Spotify: ' + error);
-    //     }
-    // }
+        setAuth(auth)        
+        setName(name)
+    })
 
     // const logout = () => {
     //     setToken('') 
@@ -103,29 +71,18 @@ function App() {
     // }
 
     return (
-        <div className="container">
-            {/* <div className="nav">
-                {!token ?
-                    <Button onClick={openAuth}>Login</Button> :
-                    <Button className='logout' onClick={logout}>Logout</Button>
-                }
-            </div> */}
-                
+        <div className="container">                
             <div className="content-body">
-                { getUser ?
-                    <User onSubmit={onSubmit}/> : <Listen user={user} onListen={onListen} / >
-                }       
+                { !name && <User onSubmit={onSubmit}/> }
+                { auth && <Listen user={name} onListen={onListen} / >}
 
-                { auth &&  <h1>Authenticated</h1>}
 
-                {/* { (auth && !getUser) &&   } */}
-                {/* { auth && <Room roomKey={key} name={room}/>}    */}
-                {/* <Room roomKey={key} name={room} /> */}
+
             </div>
             
         </div>
 
-    );
+    )
 }
 
 export default App
