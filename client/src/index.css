@@ -1,0 +1,121 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-image: url('../public/bg1.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+    height: 100vh;
+    width: 100%;
+    /* border: 2px solid red; */
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-between; */
+    align-items: center;
+}
+
+.btn-container {
+    display: flex;
+    gap: 25px;
+}
+
+.key-btn {
+    height: 200px;
+    width: 200px;
+}
+
+#make {
+    margin-left: 20px;
+}
+
+.content-body h1 {
+    color: #fff;
+}
+
+.content-body .user {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.key-container {
+    padding-top: 10px;
+    padding-left: 10px;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border: 1px solid rgba(128, 128, 128, 0.597);
+    border-radius: 7px;
+    margin-right: 5px;
+    background-color: rgba(128, 128, 128, 0.291);
+}
+
+.nav {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    text-align: right;
+    padding-top: 1em;
+}
+
+.content-body {
+    display: flex;
+    height: 100%;
+    justify-items: center;
+    align-items: center;
+    gap: 1em;
+}
+
+.listen-select {
+    display: flex;
+    flex-direction: column;
+}
+
+.room {
+    display: flex;
+    height: 80%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    /* border: 2px solid red; */
+}
+
+.room h1 {
+    color: #fff;
+}
+
+.room p {
+    color: #fff;
+}
+
+.room-body {
+    /* border: 2px solid red; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+
+.search-form {
+    display: flex;
+}
+
+.random-btn {
+    width: 100%;
+    justify-self: center;
+}
